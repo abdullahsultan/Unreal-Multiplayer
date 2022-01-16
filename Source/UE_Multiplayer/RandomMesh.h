@@ -29,4 +29,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MovingPlatform", Meta = (MakeEditWidget = true))
 		TArray<FVector> TargetPoints;
+
+	FVector GlobalTargetLocation;
+	FVector GlobalStartLocation;
 };

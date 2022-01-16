@@ -21,6 +21,9 @@ void ARandomMesh::BeginPlay()
 		SetReplicates(true);
 		SetReplicateMovement(true);
 	}*/
+
+	GlobalStartLocation = GetActorLocation();
+	GlobalTargetLocation = GetTransform().TransformPosition(TargetPoints[0]);
 	
 }
 
@@ -28,10 +31,24 @@ void ARandomMesh::BeginPlay()
 void ARandomMesh::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FVector Location = GetActorLocation();
-	FVector GlobalTargetLocation = GetTransform().TransformPosition(TargetPoints[0]);
-	FVector Direction = (GlobalTargetLocation - Location).GetSafeNormal();
-	Location += 20 * DeltaTime * Direction;
-	SetActorLocation(Location);
+
+	if (HasAuthority())
+	{
+		FVector Location = GetActorLocation();	
+		float JourneyLength = (GlobalTargetLocation - GlobalStartLocation).Size();
+		float JourneyTravelled = (Location - GlobalStartLocation).Size();
+
+		if (JourneyTravelled >= JourneyLength)
+		{
+			FVector Swap = GlobalStartLocation;
+			GlobalStartLocation = GlobalTargetLocation;
+			GlobalTargetLocation = Swap;
+		}
+		
+		FVector Direction = (GlobalTargetLocation - GlobalStartLocation).GetSafeNormal();
+		Location += 100 * DeltaTime * Direction;
+		SetActorLocation(Location);
+		
+	}
 }
 
