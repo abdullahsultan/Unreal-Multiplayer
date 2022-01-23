@@ -14,7 +14,10 @@ class UE_MULTIPLAYER_API UMultiplayerGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
-		UFUNCTION(Exec)
+	UFUNCTION(Exec)
 		void Host();
+
+	UFUNCTION(Exec)
+		void Join(const FString& IP);
 	
 };

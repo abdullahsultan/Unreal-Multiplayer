@@ -6,8 +6,18 @@
 
 void UMultiplayerGameInstance::Host()
 {
-	if (!ensure(GetWorld() != nullptr))
-		GetEngine()->AddOnScreenDebugMessage(0, 2, FColor::Green, TEXT("GetWorld IS NULL"));
+	if (!ensure(GetWorld() != nullptr)) return;
 
-		GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+	GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+	GetEngine()->AddOnScreenDebugMessage(0, 2, FColor::Green, TEXT("Hosting"));
+}
+
+void UMultiplayerGameInstance::Join(const FString& IP)
+{
+	if (!ensure(GetWorld() != nullptr)) return;
+
+	APlayerController* FirstPlayerController = GetFirstLocalPlayerController();
+	if (!ensure(FirstPlayerController != nullptr)) return;
+	FirstPlayerController->ClientTravel(IP, ETravelType::TRAVEL_Absolute);
+	GetEngine()->AddOnScreenDebugMessage(0, 2, FColor::Green, TEXT("Joined"));
 }
