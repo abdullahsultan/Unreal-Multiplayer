@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.24",
+	"EngineAssociation": "4.26",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -16,11 +16,11 @@
 	"Plugins": [
 		{
 			"Name": "OpenVRExpansionPlugin",
-			"Enabled": true
+			"Enabled": false
 		},
 		{
 			"Name": "VRExpansionPlugin",
-			"Enabled": true
+			"Enabled": false
 		}
 	]
 }
