@@ -41,4 +41,7 @@ public:
 		void ShowWidget(int32 Number);
 	UFUNCTION(BlueprintCallable)
 		void HideWidget();
+
+	UFUNCTION()
+		void OnSessionCreatedComplete(FName SessionName, bool bSuccess);
 };

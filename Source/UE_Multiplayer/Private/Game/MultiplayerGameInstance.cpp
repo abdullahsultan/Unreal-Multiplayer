@@ -3,7 +3,10 @@
 
 #include "Game/MultiplayerGameInstance.h"
 #include "Engine/World.h"
-#include <Kismet/GameplayStatics.h>
+#include "Kismet/GameplayStatics.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "OnlineSessionSettings.h"
+#include "OnlineSubsystem.h"
 
 /// <summary>
 /// 
@@ -28,6 +31,21 @@ void UMultiplayerGameInstance::Init()
 	MenuWidgetRef->AddToViewport(); MenuWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
 	JoinWidgetRef = CreateWidget<UUserWidget>(GetWorld(), JWidget, FName("JoinWidget"));
 	JoinWidgetRef->AddToViewport(); JoinWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
+
+	IOnlineSubsystem* MyOnlineSubsystem = IOnlineSubsystem::Get();
+	if (MyOnlineSubsystem)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Online Subsystem is Valid"));
+		IOnlineSessionPtr SessionInterface = MyOnlineSubsystem->GetSessionInterface();
+		if (SessionInterface.IsValid())
+		{
+			FOnlineSessionSettings SessSettings;
+			SessionInterface->CreateSession(0, TEXT("MyGameSession"), SessSettings);
+			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionCreatedComplete);
+		}
+	}
+	else
+		UE_LOG(LogTemp, Error, TEXT("Online Subsystem InValid"));
 }
 
 void UMultiplayerGameInstance::Host()
@@ -68,4 +86,14 @@ void UMultiplayerGameInstance::HideWidget()
 {
 	MenuWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
 	JoinWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UMultiplayerGameInstance::OnSessionCreatedComplete(FName SessionName, bool bSuccess)
+{
+	if (bSuccess)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Session Iniated Successfully"));
+	}
+	else
+		UE_LOG(LogTemp, Error, TEXT("Session Failed to Iniate"));
 }
