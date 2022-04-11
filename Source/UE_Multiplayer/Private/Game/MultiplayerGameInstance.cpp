@@ -31,7 +31,10 @@ void UMultiplayerGameInstance::Init()
 	MenuWidgetRef->AddToViewport(); MenuWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
 	JoinWidgetRef = CreateWidget<UUserWidget>(GetWorld(), JWidget, FName("JoinWidget"));
 	JoinWidgetRef->AddToViewport(); JoinWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
+}
 
+void UMultiplayerGameInstance::Host()
+{
 	IOnlineSubsystem* MyOnlineSubsystem = IOnlineSubsystem::Get();
 	if (MyOnlineSubsystem)
 	{
@@ -40,20 +43,17 @@ void UMultiplayerGameInstance::Init()
 		if (SessionInterface.IsValid())
 		{
 			FOnlineSessionSettings SessSettings;
+			if (SessionInterface->GetNamedSession("MyGameSession"))
+			{
+				SessionInterface->DestroySession("MyGameSession");
+			}
+			
 			SessionInterface->CreateSession(0, TEXT("MyGameSession"), SessSettings);
 			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionCreatedComplete);
 		}
 	}
 	else
 		UE_LOG(LogTemp, Error, TEXT("Online Subsystem InValid"));
-}
-
-void UMultiplayerGameInstance::Host()
-{
-	if (!ensure(GetWorld() != nullptr)) return;
-
-	GetWorld()->ServerTravel("/Game/Levels/PlayMap?listen");
-	GetEngine()->AddOnScreenDebugMessage(0, 2, FColor::Green, TEXT("Hosting"));
 }
 
 void UMultiplayerGameInstance::Join(const FString& IP)
@@ -72,12 +72,14 @@ void UMultiplayerGameInstance::ShowWidget(int32 Number)
 	{
 		case 1:
 		{
-			MenuWidgetRef->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			MenuWidgetRef = CreateWidget<UUserWidget>(GetWorld(), MWidget, FName("MainMenuWidget"));
+			MenuWidgetRef->AddToViewport();
+			//MenuWidgetRef->SetVisibility(ESlateVisibility::Visible);
 			break;
 		}
 		case 2:
 		{
-			JoinWidgetRef->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			JoinWidgetRef->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }
@@ -93,6 +95,10 @@ void UMultiplayerGameInstance::OnSessionCreatedComplete(FName SessionName, bool 
 	if (bSuccess)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Session Iniated Successfully"));
+		if (!ensure(GetWorld() != nullptr)) return;
+
+		GetWorld()->ServerTravel("/Game/Levels/PlayMapPlayMap?listen");
+		GetEngine()->AddOnScreenDebugMessage(0, 2, FColor::Green, TEXT("Hosting"));
 	}
 	else
 		UE_LOG(LogTemp, Error, TEXT("Session Failed to Iniate"));
