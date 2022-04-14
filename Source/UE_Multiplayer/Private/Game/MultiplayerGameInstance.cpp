@@ -40,6 +40,9 @@ void UMultiplayerGameInstance::Init()
 	}
 	else
 		UE_LOG(LogTemp, Error, TEXT("Online Subsystem InValid"));
+	SessSettings.bIsLANMatch = true;
+	SessSettings.NumPublicConnections = 2;
+	SessSettings.bShouldAdvertise = true;
 }
 
 void UMultiplayerGameInstance::Host()
@@ -54,17 +57,17 @@ void UMultiplayerGameInstance::Host()
 		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionCreatedComplete);
 		SessionInterface->CreateSession(0, TEXT("MyGameSession"), SessSettings);
 	}
-	FindSessions();
 }
 
 void UMultiplayerGameInstance::Join(const FString& IP)
 {
-	if (!ensure(GetWorld() != nullptr)) return;
+	FindSessions();
+	/*if (!ensure(GetWorld() != nullptr)) return;
 
 	APlayerController* FirstPlayerController = GetFirstLocalPlayerController();
 	if (!ensure(FirstPlayerController != nullptr)) return;
 	FirstPlayerController->ClientTravel(IP, ETravelType::TRAVEL_Absolute);
-	GetEngine()->AddOnScreenDebugMessage(0, 2, FColor::Green, TEXT("Joined"));
+	GetEngine()->AddOnScreenDebugMessage(0, 2, FColor::Green, TEXT("Joined"));*/
 }
 
 void UMultiplayerGameInstance::ShowWidget(int32 Number)
@@ -115,6 +118,7 @@ void UMultiplayerGameInstance::FindSessions()
 {
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionsSearched);
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
+	SessionSearch->bIsLanQuery = true;
 	if (SessionSearch.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Starting Find Session"));
@@ -125,4 +129,11 @@ void UMultiplayerGameInstance::FindSessions()
 void UMultiplayerGameInstance::OnSessionsSearched(bool success)
 {
 	UE_LOG(LogTemp, Display, TEXT("Session Searching Completed"));
+	if (success && SessionSearch.IsValid())
+	{
+		for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Found session names: %s"), *SearchResult.GetSessionIdStr());
+		}
+	}
 }
