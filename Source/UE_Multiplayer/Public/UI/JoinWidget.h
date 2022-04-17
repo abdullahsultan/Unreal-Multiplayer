@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableText.h"
+#include "Components/ScrollBox.h"
 #include "JoinWidget.generated.h"
 
 /**
@@ -25,6 +26,12 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UEditableText* Txt_IP;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UScrollBox* SessionList;
+
+	UFUNCTION()
+		void AddServer(FText ServerName);
 
 	UFUNCTION()
 	void OnClickBtnJoin();

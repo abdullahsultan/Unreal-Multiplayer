@@ -9,7 +9,11 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 #include "OnlineSubsystem.h"
+#include "UE_Multiplayer/Public/UI/ListItems.h"
+#include "UE_Multiplayer/Public/UI/JoinWidget.h"
+#include "UE_Multiplayer/Public/UI/MainMenu.h"
 #include "MultiplayerGameInstance.generated.h"
+
 
 /**
  * 
@@ -27,6 +31,7 @@ class UE_MULTIPLAYER_API UMultiplayerGameInstance : public UGameInstance
 public:
 	TSubclassOf<UUserWidget> MWidget;
 	TSubclassOf<UUserWidget> JWidget;
+	TSubclassOf<UListItems> WBP_ListItm;
 
 	IOnlineSubsystem* MyOnlineSubsystem;
 	IOnlineSessionPtr SessionInterface;
@@ -35,10 +40,10 @@ public:
 	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
 
 	UPROPERTY(BlueprintReadWrite)
-	UUserWidget* MenuWidgetRef;
+	UMainMenu* MenuWidgetRef;
 	
 	UPROPERTY(BlueprintReadWrite)
-	UUserWidget* JoinWidgetRef;
+	UJoinWidget* JoinWidgetRef;
 
 	UFUNCTION(Exec)
 		void Host();
@@ -60,5 +65,4 @@ public:
 
 	UFUNCTION()
 		void OnSessionsSearched(bool success);
-
 };

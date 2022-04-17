@@ -10,8 +10,9 @@
 /// </summary>
 UMultiplayerGameInstance::UMultiplayerGameInstance()
 {
-	ConstructorHelpers::FClassFinder<UUserWidget>MenuWidget(TEXT("/Game/UIs/WBP_MenuWidget"));
-	ConstructorHelpers::FClassFinder<UUserWidget>JoinWidget(TEXT("/Game/UIs/WBP_JoinWidget"));
+	ConstructorHelpers::FClassFinder<UMainMenu>MenuWidget(TEXT("/Game/UIs/WBP_MenuWidget"));
+	ConstructorHelpers::FClassFinder<UJoinWidget>JoinWidget(TEXT("/Game/UIs/WBP_JoinWidget"));
+	ConstructorHelpers::FClassFinder<UListItems>ListItm(TEXT("/Game/UIs/WBP_Items"));
 	if (MenuWidget.Class)
 	{
 		MWidget = MenuWidget.Class;
@@ -20,13 +21,18 @@ UMultiplayerGameInstance::UMultiplayerGameInstance()
 	{
 		JWidget = JoinWidget.Class;
 	}
+	if (ListItm.Class)
+	{
+		WBP_ListItm = ListItm.Class;
+	}
+
 }
 
 void UMultiplayerGameInstance::Init()
 {
-	MenuWidgetRef = CreateWidget<UUserWidget>(GetWorld(), MWidget, FName("MainMenuWidget"));
+	MenuWidgetRef = CreateWidget<UMainMenu>(GetWorld(), MWidget, FName("MainMenuWidget"));
 	MenuWidgetRef->AddToViewport(); MenuWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
-	JoinWidgetRef = CreateWidget<UUserWidget>(GetWorld(), JWidget, FName("JoinWidget"));
+	JoinWidgetRef = CreateWidget<UJoinWidget>(GetWorld(), JWidget, FName("JoinWidget"));
 	JoinWidgetRef->AddToViewport(); JoinWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
 	MyOnlineSubsystem = IOnlineSubsystem::Get();
 	if (MyOnlineSubsystem)
@@ -76,7 +82,7 @@ void UMultiplayerGameInstance::ShowWidget(int32 Number)
 	{
 	case 1:
 	{
-		MenuWidgetRef = CreateWidget<UUserWidget>(GetWorld(), MWidget, FName("MainMenuWidget"));
+		MenuWidgetRef = CreateWidget<UMainMenu>(GetWorld(), MWidget, FName("MainMenuWidget"));
 		MenuWidgetRef->AddToViewport();
 		//MenuWidgetRef->SetVisibility(ESlateVisibility::Visible);
 		break;
@@ -134,6 +140,7 @@ void UMultiplayerGameInstance::OnSessionsSearched(bool success)
 		for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
 		{
 			UE_LOG(LogTemp, Display, TEXT("Found session names: %s"), *SearchResult.GetSessionIdStr());
+			JoinWidgetRef->AddServer(FText::FromString(SearchResult.GetSessionIdStr()));
 		}
 	}
 }
