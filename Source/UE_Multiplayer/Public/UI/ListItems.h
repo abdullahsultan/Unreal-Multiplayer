@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
+#include "Components/EditableText.h"
 #include "ListItems.generated.h"
 
 /**
@@ -16,6 +17,6 @@ class UE_MULTIPLAYER_API UListItems : public UUserWidget
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	UTextBlock* ServerName_Txt;
+		UEditableText* ServerName_Txt;
 	
 };

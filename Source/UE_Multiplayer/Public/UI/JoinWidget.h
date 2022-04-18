@@ -9,6 +9,7 @@
 #include "Components/ScrollBox.h"
 #include "JoinWidget.generated.h"
 
+class UMultiplayerGameInstance;
 /**
  * 
  */
@@ -35,4 +36,10 @@ public:
 
 	UFUNCTION()
 	void OnClickBtnJoin();
+
+	UFUNCTION()
+		void OnSessionSearchCompleted(bool Success);
+
+	UPROPERTY()
+	UMultiplayerGameInstance* GInstance;
 };

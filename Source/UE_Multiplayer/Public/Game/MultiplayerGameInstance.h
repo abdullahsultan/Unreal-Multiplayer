@@ -60,9 +60,10 @@ public:
 		void OnSessionCreatedComplete(FName SessionName, bool bSuccess);
 	UFUNCTION()
 		void OnSessionDestroyComplete(FName SessionName, bool bSuccess);
-
+	
+	UFUNCTION()
 	void FindSessions();
 
-	UFUNCTION()
-		void OnSessionsSearched(bool success);
+	/*UFUNCTION()
+		void OnSessionsSearched(bool success);*/
 };
