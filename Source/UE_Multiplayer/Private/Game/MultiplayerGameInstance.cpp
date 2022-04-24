@@ -4,6 +4,7 @@
 #include "Game/MultiplayerGameInstance.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
+#include "Interfaces/OnlineSessionInterface.h"
 
 /// <summary>
 /// 
@@ -27,55 +28,9 @@ UMultiplayerGameInstance::UMultiplayerGameInstance()
 	}
 
 }
-
-void UMultiplayerGameInstance::Init()
-{
-	MyOnlineSubsystem = IOnlineSubsystem::Get();
-	if (MyOnlineSubsystem)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Online Subsystem is Valid"));
-		SessionInterface = MyOnlineSubsystem->GetSessionInterface();
-		if (!SessionInterface.IsValid())
-		{
-			UE_LOG(LogTemp, Error, TEXT("SessionInterface InValid"));
-		}
-	}
-	else
-		UE_LOG(LogTemp, Error, TEXT("Online Subsystem InValid"));
-	SessSettings.bIsLANMatch = true;
-	SessSettings.NumPublicConnections = 2;
-	SessSettings.bShouldAdvertise = true;
-	MenuWidgetRef = CreateWidget<UMainMenu>(GetWorld(), MWidget, FName("MainMenuWidget"));
-	MenuWidgetRef->AddToViewport(); MenuWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
-	JoinWidgetRef = CreateWidget<UJoinWidget>(GetWorld(), JWidget, FName("JoinWidget"));
-	JoinWidgetRef->AddToViewport(); JoinWidgetRef->SetVisibility(ESlateVisibility::Collapsed);// JoinWidgetRef->GInstance = this;
-}
-
-void UMultiplayerGameInstance::Host()
-{
-	if (SessionInterface->GetNamedSession("MyGameSession"))
-	{
-		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionDestroyComplete);
-		SessionInterface->DestroySession("MyGameSession");
-	}
-	else
-	{
-		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionCreatedComplete);
-		SessionInterface->CreateSession(0, TEXT("MyGameSession"), SessSettings);
-	}
-}
-
-void UMultiplayerGameInstance::Join(const FString& IP)
-{
-	FindSessions();
-	/*if (!ensure(GetWorld() != nullptr)) return;
-
-	APlayerController* FirstPlayerController = GetFirstLocalPlayerController();
-	if (!ensure(FirstPlayerController != nullptr)) return;
-	FirstPlayerController->ClientTravel(IP, ETravelType::TRAVEL_Absolute);
-	GetEngine()->AddOnScreenDebugMessage(0, 2, FColor::Green, TEXT("Joined"));*/
-}
-
+/*
+				//////////////////////////////Widgets Settings//////////////////////////////
+*/
 void UMultiplayerGameInstance::ShowWidget(int32 Number)
 {
 	switch (Number)
@@ -99,6 +54,58 @@ void UMultiplayerGameInstance::HideWidget()
 	MenuWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
 	JoinWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
 }
+/*
+				//////////////////////////////Init//////////////////////////////
+*/
+void UMultiplayerGameInstance::Init()
+{
+	MyOnlineSubsystem = IOnlineSubsystem::Get();
+	if (MyOnlineSubsystem)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Online Subsystem is Valid"));
+		SessionInterface = MyOnlineSubsystem->GetSessionInterface();
+		if (!SessionInterface.IsValid())
+		{
+			UE_LOG(LogTemp, Error, TEXT("SessionInterface InValid"));
+		}
+	}
+	else
+		UE_LOG(LogTemp, Error, TEXT("Online Subsystem InValid"));
+	SessSettings.bIsLANMatch = true;
+	SessSettings.NumPublicConnections = 2;
+	SessSettings.bShouldAdvertise = true;
+	SessSettings.bUsesPresence = true;
+	SessSettings.bUseLobbiesIfAvailable = true;
+	MenuWidgetRef = CreateWidget<UMainMenu>(GetWorld(), MWidget, FName("MainMenuWidget"));
+	MenuWidgetRef->AddToViewport(); MenuWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
+	JoinWidgetRef = CreateWidget<UJoinWidget>(GetWorld(), JWidget, FName("JoinWidget"));
+	JoinWidgetRef->AddToViewport(); JoinWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
+	
+	SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionDestroyComplete);
+	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionCreatedComplete);
+	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionsSearched);
+	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnJoinSessionCompletes);
+}
+
+
+
+void UMultiplayerGameInstance::Host()
+{
+	if (SessionInterface->GetNamedSession("MyGameSession"))
+	{
+		SessionInterface->DestroySession("MyGameSession");
+	}
+	else
+	{
+		SessionInterface->CreateSession(0, TEXT("MyGameSession"), SessSettings);
+	}
+}
+
+void UMultiplayerGameInstance::Join(const FString& IP, int32 SessionNo)
+{
+	SessionInterface->JoinSession(0,FName(*IP), SessionSearch->SearchResults[SessionNo]);
+}
+
 
 void UMultiplayerGameInstance::OnSessionCreatedComplete(FName SessionName, bool bSuccess)
 {
@@ -116,13 +123,11 @@ void UMultiplayerGameInstance::OnSessionCreatedComplete(FName SessionName, bool 
 
 void UMultiplayerGameInstance::OnSessionDestroyComplete(FName SessionName, bool bSuccess)
 {
-	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionCreatedComplete);
 	SessionInterface->CreateSession(0, TEXT("MyGameSession"), SessSettings);
 }
 
 void UMultiplayerGameInstance::FindSessions()
 {
-	//SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionsSearched);
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	SessionSearch->bIsLanQuery = true;
 	if (SessionSearch.IsValid())
@@ -132,15 +137,27 @@ void UMultiplayerGameInstance::FindSessions()
 	}
 }
 
-//void UMultiplayerGameInstance::OnSessionsSearched(bool success)
-//{
-//	UE_LOG(LogTemp, Display, TEXT("Session Searching Completed"));
-//	if (success && SessionSearch.IsValid())
-//	{
-//		for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
-//		{
-//			UE_LOG(LogTemp, Display, TEXT("Found session names: %s"), *SearchResult.GetSessionIdStr());
-//			JoinWidgetRef->AddServer(FText::FromString(SearchResult.GetSessionIdStr()));
-//		}
-//	}
-//}
+void UMultiplayerGameInstance::OnSessionsSearched(bool success)
+{
+	UE_LOG(LogTemp, Display, TEXT("Session Searching Completed"));
+	if (success && SessionSearch.IsValid())
+	{
+		for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Found session names: %s"), *SearchResult.GetSessionIdStr());
+		}
+	}
+}
+
+void UMultiplayerGameInstance::OnJoinSessionCompletes(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
+{
+	APlayerController* FirstPlayerController = GetFirstLocalPlayerController();
+	if (!ensure(FirstPlayerController != nullptr)) return;
+	FString AddressToConnect;
+	if (!SessionInterface->GetResolvedConnectString(SessionName, AddressToConnect))
+	{
+		UE_LOG(LogTemp, Error, TEXT("ResolvedString Failed")); return;
+	}
+	FirstPlayerController->ClientTravel(AddressToConnect, ETravelType::TRAVEL_Absolute);
+	GetEngine()->AddOnScreenDebugMessage(0, 2, FColor::Green, TEXT("Joined"));
+}

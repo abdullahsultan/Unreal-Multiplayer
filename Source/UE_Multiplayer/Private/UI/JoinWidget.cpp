@@ -19,13 +19,12 @@ void UJoinWidget::NativeConstruct()
 }
 
 
-void UJoinWidget::AddServer(FText ServerName)
+void UJoinWidget::AddServer(FText ServerName, int32 BtnNo)
 {
 	if (GInstance->WBP_ListItm)
 	{
 		UListItems* TextBlc = CreateWidget<UListItems>(GetWorld(),GInstance->WBP_ListItm, FName(""));
 		TextBlc->ServerName_Txt->SetText(ServerName);
-		//UE_LOG(LogTemp, Error, TEXT("NUNUNU %s"), *TextBlc->ServerName_Txt->GetText().ToString());
 		SessionList->AddChild(TextBlc);
 		UE_LOG(LogTemp, Warning, TEXT("CHILDS = %d"), SessionList->GetChildrenCount());
 	}
@@ -35,17 +34,19 @@ void UJoinWidget::AddServer(FText ServerName)
 
 void UJoinWidget::OnClickBtnJoin()
 {
-	GInstance->Join(Txt_IP->GetText().ToString());
-	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetShowMouseCursor(false);
-	//RemoveFromParent();
+//	GInstance->Join(Txt_IP->GetText().ToString());
+//	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetShowMouseCursor(false);
+	RemoveFromParent();
 }
 
 void UJoinWidget::OnSessionSearchCompleted(bool Success)
 {
+	int32 SessNo = 0;
 	for (const FOnlineSessionSearchResult& SearchResult : GInstance->SessionSearch->SearchResults)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found session names: %s"), *SearchResult.GetSessionIdStr());
-		AddServer(FText::FromString(SearchResult.GetSessionIdStr()));
+		AddServer(FText::FromString(SearchResult.GetSessionIdStr()), SessNo);
+		SessNo++;
 	}
 }
 

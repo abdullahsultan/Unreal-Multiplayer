@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/EditableText.h"
+#include "Components/Button.h"
 #include "ListItems.generated.h"
 
 /**
@@ -19,4 +20,13 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 		UEditableText* ServerName_Txt;
 	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+		UButton* Item_Btn;
+
+	void NativeConstruct() override;
+
+	UFUNCTION()
+		void OnItemClick();
+
+	int32 SessionNo;
 };

@@ -32,6 +32,10 @@
 				"Mac",
 				"Linux"
 			]
+		},
+		{
+			"Name": "OnlineSubsystemSteam",
+			"Enabled": true
 		}
 	]
 }

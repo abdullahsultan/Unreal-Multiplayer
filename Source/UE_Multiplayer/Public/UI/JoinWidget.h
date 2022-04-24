@@ -32,7 +32,7 @@ public:
 	UScrollBox* SessionList;
 
 	UFUNCTION()
-		void AddServer(FText ServerName);
+		void AddServer(FText ServerName, int32 BtnNo);
 
 	UFUNCTION()
 	void OnClickBtnJoin();

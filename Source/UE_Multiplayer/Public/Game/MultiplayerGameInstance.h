@@ -6,14 +6,13 @@
 #include "Engine/GameInstance.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
+#include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
-#include "OnlineSubsystem.h"
 #include "UE_Multiplayer/Public/UI/ListItems.h"
 #include "UE_Multiplayer/Public/UI/JoinWidget.h"
 #include "UE_Multiplayer/Public/UI/MainMenu.h"
 #include "MultiplayerGameInstance.generated.h"
-
 
 /**
  * 
@@ -45,16 +44,17 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	UJoinWidget* JoinWidgetRef;
 
-	UFUNCTION(Exec)
-		void Host();
-
-	UFUNCTION(Exec)
-		void Join(const FString& IP);
-
 	UFUNCTION(BlueprintCallable)
 		void ShowWidget(int32 Number);
 	UFUNCTION(BlueprintCallable)
 		void HideWidget();
+
+	UFUNCTION(Exec)
+		void Host();
+
+	UFUNCTION(Exec)
+		void Join(const FString& IP, int32 SessionNo);
+
 
 	UFUNCTION()
 		void OnSessionCreatedComplete(FName SessionName, bool bSuccess);
@@ -64,6 +64,8 @@ public:
 	UFUNCTION()
 	void FindSessions();
 
-	/*UFUNCTION()
-		void OnSessionsSearched(bool success);*/
+	UFUNCTION()
+		void OnSessionsSearched(bool success);
+
+	void OnJoinSessionCompletes(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 };

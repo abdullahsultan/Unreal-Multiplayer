@@ -21,6 +21,7 @@ void UMainMenu::OnClickHost()
 void UMainMenu::OnClickJoin()
 {
 	UMultiplayerGameInstance* GInstance = Cast<UMultiplayerGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	GInstance->FindSessions();
 	if (GInstance->JWidget)
 	{
 		UUserWidget* Menu = CreateWidget<UUserWidget>(this, GInstance->JWidget);
