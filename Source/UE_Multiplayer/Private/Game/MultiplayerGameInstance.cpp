@@ -73,14 +73,15 @@ void UMultiplayerGameInstance::Init()
 		UE_LOG(LogTemp, Error, TEXT("Online Subsystem InValid"));
 	SessSettings.bIsLANMatch = false;
 	SessSettings.NumPublicConnections = 2;
-	SessSettings.bShouldAdvertise = true;
+	SessSettings.bShouldAdvertise = true; //Lobby thing
 	SessSettings.bUsesPresence = true; // To enable lobby
 	SessSettings.bUseLobbiesIfAvailable = true;
+	SessSettings.Set(TEXT("Test1"), FString("MulServer"), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing); //2nd argument can be used as servername
 	MenuWidgetRef = CreateWidget<UMainMenu>(GetWorld(), MWidget, FName("MainMenuWidget"));
 	MenuWidgetRef->AddToViewport(); MenuWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
 	JoinWidgetRef = CreateWidget<UJoinWidget>(GetWorld(), JWidget, FName("JoinWidget"));
 	JoinWidgetRef->AddToViewport(); JoinWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
-	
+
 	SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionDestroyComplete);
 	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionCreatedComplete);
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionsSearched);
@@ -103,7 +104,7 @@ void UMultiplayerGameInstance::Host()
 
 void UMultiplayerGameInstance::Join(const FString& IP, int32 SessionNo)
 {
-	SessionInterface->JoinSession(0,FName(*IP), SessionSearch->SearchResults[SessionNo]);
+	SessionInterface->JoinSession(0, FName(*IP), SessionSearch->SearchResults[SessionNo]);
 }
 
 
@@ -133,7 +134,7 @@ void UMultiplayerGameInstance::FindSessions()
 	//SessionSearch->bIsLanQuery = false;
 	SessionSearch->MaxSearchResults = 100;
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
-	
+
 	UE_LOG(LogTemp, Warning, TEXT("Starting Find Session"));
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 }
@@ -161,4 +162,8 @@ void UMultiplayerGameInstance::OnJoinSessionCompletes(FName SessionName, EOnJoin
 	}
 	FirstPlayerController->ClientTravel(AddressToConnect, ETravelType::TRAVEL_Absolute);
 	GetEngine()->AddOnScreenDebugMessage(0, 2, FColor::Green, TEXT("Joined"));
+	FString OutStr;
+	SessSettings.Get(TEXT("Test1"), OutStr);
+	UE_LOG(LogTemp, Error, TEXT("OutStr %s"), *OutStr);
+	
 }
