@@ -71,10 +71,10 @@ void UMultiplayerGameInstance::Init()
 	}
 	else
 		UE_LOG(LogTemp, Error, TEXT("Online Subsystem InValid"));
-	SessSettings.bIsLANMatch = false;
+	SessSettings.bIsLANMatch = true;
 	SessSettings.NumPublicConnections = 2;
 	SessSettings.bShouldAdvertise = true;
-	SessSettings.bUsesPresence = true; // To enable lobby
+	SessSettings.bUsesPresence = true;
 	SessSettings.bUseLobbiesIfAvailable = true;
 	MenuWidgetRef = CreateWidget<UMainMenu>(GetWorld(), MWidget, FName("MainMenuWidget"));
 	MenuWidgetRef->AddToViewport(); MenuWidgetRef->SetVisibility(ESlateVisibility::Collapsed);
@@ -129,13 +129,12 @@ void UMultiplayerGameInstance::OnSessionDestroyComplete(FName SessionName, bool 
 void UMultiplayerGameInstance::FindSessions()
 {
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
-	if (!SessionSearch) { return; }
-	//SessionSearch->bIsLanQuery = false;
-	SessionSearch->MaxSearchResults = 100;
-	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
-	
-	UE_LOG(LogTemp, Warning, TEXT("Starting Find Session"));
-	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+	SessionSearch->bIsLanQuery = true;
+	if (SessionSearch.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Starting Find Session"));
+		SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+	}
 }
 
 void UMultiplayerGameInstance::OnSessionsSearched(bool success)
