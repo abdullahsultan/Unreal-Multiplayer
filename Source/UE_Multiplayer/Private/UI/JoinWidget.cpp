@@ -41,7 +41,6 @@ void UJoinWidget::OnClickBtnJoin()
 
 void UJoinWidget::OnSessionSearchCompleted(bool Success)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Session Search Completed Widget"));
 	int32 SessNo = 0;
 	for (const FOnlineSessionSearchResult& SearchResult : GInstance->SessionSearch->SearchResults)
 	{
