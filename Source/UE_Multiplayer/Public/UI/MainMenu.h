@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "SetServerNameWidget.h"
 #include "MainMenu.generated.h"
 
 /**
@@ -23,6 +24,9 @@ public:
 	UButton* BtnHost;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UButton* BtnJoin;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	USetServerNameWidget* SetServerNameWidget;
 
 	UFUNCTION()
 	void OnClickHost();

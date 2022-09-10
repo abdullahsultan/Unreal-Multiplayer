@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Interfaces/OnlineSessionInterface.h"
 
+static const FName HostingSessionSettingsKey = "MultiPlayerKey";
 /// <summary>
 /// 
 /// </summary>
@@ -91,6 +92,8 @@ void UMultiplayerGameInstance::Init()
 
 void UMultiplayerGameInstance::Host()
 {
+	UE_LOG(LogTemp, Warning, TEXT("HostingBegin %s"), *ServerNameToHost);
+	SessSettings.Set(HostingSessionSettingsKey, ServerNameToHost, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	if (SessionInterface->GetNamedSession("MyGameSession"))
 	{
 		SessionInterface->DestroySession("MyGameSession");

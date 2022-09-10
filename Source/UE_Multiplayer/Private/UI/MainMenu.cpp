@@ -7,7 +7,7 @@
 
 void UMainMenu::NativeConstruct()
 {
-	BtnHost->OnClicked.AddDynamic(this, &UMainMenu::OnClickHost);
+	//BtnHost->OnClicked.AddDynamic(this, &UMainMenu::OnClickHost);
 	BtnJoin->OnClicked.AddDynamic(this, &UMainMenu::OnClickJoin);
 }
 

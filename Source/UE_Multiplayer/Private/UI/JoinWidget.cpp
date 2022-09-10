@@ -45,7 +45,12 @@ void UJoinWidget::OnSessionSearchCompleted(bool Success)
 	for (const FOnlineSessionSearchResult& SearchResult : GInstance->SessionSearch->SearchResults)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found session names: %s"), *SearchResult.GetSessionIdStr());
-		AddServer(FText::FromString(SearchResult.GetSessionIdStr()), SessNo);
+		FString FoundSessionName;
+		if (SearchResult.Session.SessionSettings.Get("MultiPlayerKey", FoundSessionName))
+		{
+
+		}
+		AddServer(FText::FromString(FoundSessionName), SessNo);
 		SessNo++;
 	}
 }

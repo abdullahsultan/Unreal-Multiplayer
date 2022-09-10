@@ -44,6 +44,8 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	UJoinWidget* JoinWidgetRef;
 
+	FString ServerNameToHost;
+
 	UFUNCTION(BlueprintCallable)
 		void ShowWidget(int32 Number);
 	UFUNCTION(BlueprintCallable)
