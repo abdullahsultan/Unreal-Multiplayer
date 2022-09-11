@@ -26,6 +26,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(BindWidget))
 	UEditableText* TxtBoxServerName;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UEditableText* TxtBoxNoOfPlayers;
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		UButton* BtnEnter;
 	

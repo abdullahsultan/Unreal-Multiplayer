@@ -46,6 +46,8 @@ public:
 
 	FString ServerNameToHost;
 
+	int32 NumberofPlayers;
+
 	UFUNCTION(BlueprintCallable)
 		void ShowWidget(int32 Number);
 	UFUNCTION(BlueprintCallable)

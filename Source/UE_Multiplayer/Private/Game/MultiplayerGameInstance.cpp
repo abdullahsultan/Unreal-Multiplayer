@@ -117,7 +117,7 @@ void UMultiplayerGameInstance::OnSessionCreatedComplete(FName SessionName, bool 
 		UE_LOG(LogTemp, Display, TEXT("Session Iniated Successfully"));
 		if (!ensure(GetWorld() != nullptr)) return;
 
-		GetWorld()->ServerTravel("/Game/Levels/PlayMap?listen");
+		GetWorld()->ServerTravel("/Game/Levels/Lobby?listen");
 		GetEngine()->AddOnScreenDebugMessage(0, 2, FColor::Green, TEXT("Hosting"));
 	}
 	else
