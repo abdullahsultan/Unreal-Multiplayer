@@ -4,9 +4,11 @@
 #include "Game/MultiplayerGameInstance.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetStringLibrary.h"
 #include "Interfaces/OnlineSessionInterface.h"
 
 static const FName HostingSessionSettingsKey = "MultiPlayerKey";
+static const FName MULGameSessionName = "LegionGameSession";
 /// <summary>
 /// 
 /// </summary>
@@ -94,13 +96,13 @@ void UMultiplayerGameInstance::Host()
 {
 	UE_LOG(LogTemp, Warning, TEXT("HostingBegin %s"), *ServerNameToHost);
 	SessSettings.Set(HostingSessionSettingsKey, ServerNameToHost, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-	if (SessionInterface->GetNamedSession("MyGameSession"))
+	if (SessionInterface->GetNamedSession(MULGameSessionName))
 	{
-		SessionInterface->DestroySession("MyGameSession");
+		SessionInterface->DestroySession(MULGameSessionName);
 	}
 	else
 	{
-		SessionInterface->CreateSession(0, TEXT("MyGameSession"), SessSettings);
+		SessionInterface->CreateSession(0, MULGameSessionName, SessSettings);
 	}
 }
 
@@ -126,7 +128,7 @@ void UMultiplayerGameInstance::OnSessionCreatedComplete(FName SessionName, bool 
 
 void UMultiplayerGameInstance::OnSessionDestroyComplete(FName SessionName, bool bSuccess)
 {
-	SessionInterface->CreateSession(0, TEXT("MyGameSession"), SessSettings);
+	SessionInterface->CreateSession(0, MULGameSessionName, SessSettings);
 }
 
 void UMultiplayerGameInstance::FindSessions()
@@ -150,6 +152,11 @@ void UMultiplayerGameInstance::OnSessionsSearched(bool success)
 			UE_LOG(LogTemp, Display, TEXT("Found session names: %s"), *SearchResult.GetSessionIdStr());
 		}
 	}
+}
+
+void UMultiplayerGameInstance::StartSession()
+{
+	SessionInterface->StartSession(MULGameSessionName); //To stop joining session after game start
 }
 
 void UMultiplayerGameInstance::OnJoinSessionCompletes(FName SessionName, EOnJoinSessionCompleteResult::Type Result)

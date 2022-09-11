@@ -70,6 +70,8 @@ public:
 
 	UFUNCTION()
 		void OnSessionsSearched(bool success);
+	UFUNCTION()
+		void StartSession();
 
 	void OnJoinSessionCompletes(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 };

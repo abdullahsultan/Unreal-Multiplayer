@@ -12,6 +12,7 @@ void AMultiplayerLobbyGameMode::PostLogin(APlayerController* NewPlaer)
 
 	if (NumberofPlayers >= Cast<UMultiplayerGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->NumberofPlayers)
 	{
+		Cast<UMultiplayerGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))->StartSession();
 		bUseSeamlessTravel = true;
 		GetWorld()->ServerTravel("/Game/Levels/PlayMap");
 	}
