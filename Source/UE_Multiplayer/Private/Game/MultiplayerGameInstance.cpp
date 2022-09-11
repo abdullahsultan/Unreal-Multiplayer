@@ -88,6 +88,8 @@ void UMultiplayerGameInstance::Init()
 	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionCreatedComplete);
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnSessionsSearched);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UMultiplayerGameInstance::OnJoinSessionCompletes);
+
+	//GEngine->OnNetworkFailure delegate used to handle client if server is down
 }
 
 
